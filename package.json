@@ -14,7 +14,8 @@
     "build": "hardhat compile",
     "benchmark": "hardhat run scripts/benchmark.js --max-memory 32000",
     "coverage": "COVERAGE=true hardhat coverage",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "prettier": "npx prettier --write '**/*.js' '**/*.ts' 'contracts/**/*.sol' '**/*.json' '**/*.md'"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -39,7 +40,6 @@
     "solidity-coverage": "^0.7.17"
   },
   "dependencies": {
-    "@0xsequence/create3": "https://github.com/0xsequence/create3.git",
     "csv-writer": "^1.6.0"
   }
 }
