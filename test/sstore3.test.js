@@ -61,7 +61,7 @@ describe('SSTORE3', function () {
     expect(await sstore3.read4(key)).to.equal(data2)
   })
 
-  /*describe('Using long key', () => {
+  describe('Using long key', () => {
     const key = `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
@@ -219,5 +219,5 @@ describe('SSTORE3', function () {
         })
       })
     })
-  })*/
+  })
 })

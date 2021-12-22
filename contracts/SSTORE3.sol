@@ -67,29 +67,23 @@ library SSTORE3 {
       0x1C  0x32  0x32                                          ORIGIN        origin        % use tx.origin for cheaper gas
       0x1D  0xFF  0xFF                                          SELFDESTRUCT
      */
+    bytes32 salt = internalKey(_key);
+
     bytes memory code = Bytecode.creationCodeFor(
       abi.encodePacked(
         hex"33_73",
-        address(this),
+        CREATE3Optimized.computeProxyAddress(salt),
         hex"14_60_1B_57_00_5B_32_FF",
         _data
       )
     );
 
-    bytes32 salt = internalKey(_key);
-    pointer = CREATE3Optimized.addressOf(salt);
-    if (pointer.code.length != 0) {
-      // Code exists, call to selfdestruct
-      // solhint-disable avoid-low-level-calls
-      (bool success, ) = pointer.call("");
-      if (!success) revert ErrorDestroyingContract();
-      // solhint-enable avoid-low-level-calls
-    }
+    // pointer = CREATE3Optimized.addressOf(salt);
 
     // Deploy contract using CREATE3
     CREATE3Optimized.create3Optimized(salt, code);
 
-    console.logBytes(pointer.code);
+    // console.logBytes(pointer.code);
   }
 
   /**
