@@ -51,11 +51,9 @@ library Bytecode {
     uint256 _start,
     uint256 _end
   ) internal view returns (bytes memory oCode) {
-    uint256 csize;
-    address _addr;
+    address _addr = _possibleAddr1;
+    uint256 csize = _addr.code.length;
 
-    _addr = _possibleAddr1;
-    csize = _addr.code.length;
     if (csize == 0) {
       _addr = _possibleAddr2;
       csize = _addr.code.length;
