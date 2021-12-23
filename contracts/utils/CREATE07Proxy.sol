@@ -2,8 +2,8 @@
 pragma solidity ^0.8.10;
 
 contract CREATE07Proxy {
-  // solhint-disable-next-line no-complex-fallback, payable-fallback
-  fallback() external {
+  // solhint-disable-next-line no-complex-fallback
+  fallback() external payable {
     bytes memory creationCode = msg.data;
 
     address nonce1Address = address(
