@@ -1,55 +1,50 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "./Bytecode.sol";
-
 contract CREATE07Proxy {
-  error ErrorDestroyingContract();
-  error ErrorDeployingToDeterministicAddress();
+  // solhint-disable-next-line no-complex-fallback, payable-fallback
+  fallback() external {
+    bytes memory creationCode = msg.data;
 
-  function deployDataContract(bytes memory creationCode) external {
-    address nonce1Address = addressOf(1);
-    address nonce2Address = addressOf(2);
+    address nonce1Address = address(
+      uint160(
+        uint256(keccak256(abi.encodePacked(hex"d6_94", address(this), hex"01")))
+      )
+    );
+    address nonce2Address = address(
+      uint160(
+        uint256(keccak256(abi.encodePacked(hex"d6_94", address(this), hex"02")))
+      )
+    );
 
     address dataContract;
 
     if (nonce1Address.code.length == 0) {
       // deploy data at nonce 1
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         dataContract := create(0, add(creationCode, 32), mload(creationCode))
       }
-      if (dataContract != nonce1Address)
-        revert ErrorDeployingToDeterministicAddress();
 
       if (nonce2Address.code.length != 0) {
         // selfdestruct data contract at nonce 2
-        (bool success, ) = nonce2Address.call("");
-        if (!success) revert ErrorDestroyingContract();
+        // solhint-disable-next-line avoid-low-level-calls
+        nonce2Address.call("");
       }
     } else {
       // deploy data at nonce 2
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         dataContract := create(0, add(creationCode, 32), mload(creationCode))
       }
-      if (dataContract != nonce2Address)
-        revert ErrorDeployingToDeterministicAddress();
 
       // selfdestruct data contract at nonce 1
-      (bool success, ) = nonce1Address.call("");
-      if (!success) revert ErrorDestroyingContract();
+      // solhint-disable-next-line avoid-low-level-calls
+      nonce1Address.call("");
 
       // selfdestruct this proxy to reset nonce to 1
       // the next data write will redeploy this proxy
-      selfdestruct(payable(tx.origin));
+      selfdestruct(payable(msg.sender));
     }
-  }
-
-  function addressOf(uint8 nonce) internal view returns (address) {
-    return
-      address(
-        uint160(
-          uint256(keccak256(abi.encodePacked(hex"d6_94", address(this), nonce)))
-        )
-      );
   }
 }
