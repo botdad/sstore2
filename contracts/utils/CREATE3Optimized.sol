@@ -70,13 +70,13 @@ library CREATE3Optimized {
   /**
     @notice Computes the resulting address of a contract deployed using address(this) and the given `_salt`
     @param _salt Salt of the contract creation, resulting address will be derivated from this value only
-    @return calculatedAddress addr of the deployed contract, reverts on error
+    @return the two possible addr of the deployed data, reverts on error
     @dev The address creation formula is: keccak256(rlp([keccak256(0xff ++ address(this) ++ _salt ++ keccak256(childBytecode))[12:], 0x01]))
   */
-  function addressOf(bytes32 _salt)
+  function possibleAddressesOf(bytes32 _salt)
     internal
     view
-    returns (address calculatedAddress)
+    returns (address, address)
   {
     address proxy = address(
       uint160(
@@ -93,17 +93,18 @@ library CREATE3Optimized {
       )
     );
 
-    calculatedAddress = address(
-      uint160(uint256(keccak256(abi.encodePacked(hex"d6_94", proxy, hex"01"))))
-    );
-
-    if (calculatedAddress.code.length == 0) {
-      calculatedAddress = address(
+    return (
+      address(
+        uint160(
+          uint256(keccak256(abi.encodePacked(hex"d6_94", proxy, hex"01")))
+        )
+      ),
+      address(
         uint160(
           uint256(keccak256(abi.encodePacked(hex"d6_94", proxy, hex"02")))
         )
-      );
-    }
+      )
+    );
   }
 
   function computeProxyAddress(bytes32 _salt) internal view returns (address) {

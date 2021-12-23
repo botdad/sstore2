@@ -59,12 +59,17 @@ contract TestSSTORE3 {
     return SSTORE3.read(_key, _start, _end);
   }
 
-  function addressOf1(bytes32 _key) external view returns (address) {
-    return CREATE3Optimized.addressOf(SSTORE3.internalKey(_key));
+  function addressOf1(bytes32 _key) external view returns (address _addr) {
+    (_addr, ) = CREATE3Optimized.possibleAddressesOf(SSTORE3.internalKey(_key));
   }
 
-  function addressOf2(string calldata _key) external view returns (address) {
-    return
-      CREATE3Optimized.addressOf(SSTORE3.internalKey(keccak256(bytes(_key))));
+  function addressOf2(string calldata _key)
+    external
+    view
+    returns (address _addr)
+  {
+    (_addr, ) = CREATE3Optimized.possibleAddressesOf(
+      SSTORE3.internalKey(keccak256(bytes(_key)))
+    );
   }
 }

@@ -37,7 +37,8 @@ library Bytecode {
   /**
     @notice Returns the code of a given address
     @dev It will fail if `_end < _start`
-    @param _addr Address that may or may not contain code
+    @param _possibleAddr1 first of two addresses that may or may not contain code
+    @param _possibleAddr2 second of two addresses that may or may not contain code
     @param _start number of bytes of code to skip on read
     @param _end index before which to end extraction
     @return oCode read from `_addr` deployed bytecode
@@ -45,11 +46,20 @@ library Bytecode {
     Forked from: https://gist.github.com/KardanovIR/fe98661df9338c842b4a30306d507fbd
   */
   function codeAt(
-    address _addr,
+    address _possibleAddr1,
+    address _possibleAddr2,
     uint256 _start,
     uint256 _end
   ) internal view returns (bytes memory oCode) {
-    uint256 csize = _addr.code.length;
+    uint256 csize;
+    address _addr;
+
+    _addr = _possibleAddr1;
+    csize = _addr.code.length;
+    if (csize == 0) {
+      _addr = _possibleAddr2;
+      csize = _addr.code.length;
+    }
     if (csize == 0) return bytes("");
 
     if (_start > csize) return bytes("");

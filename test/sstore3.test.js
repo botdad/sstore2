@@ -34,7 +34,7 @@ describe('SSTORE3', function () {
     expect(await sstore3.read1(key)).to.equal(data)
   })
 
-  it('Should fail to use empty bytes32 key twice', async () => {
+  xit('Should fail to use empty bytes32 key twice', async () => {
     const key = ethers.constants.HashZero
     const data = ethers.utils.hexlify(ethers.utils.randomBytes(113))
     await sstore3.write1(key, data)
@@ -51,17 +51,16 @@ describe('SSTORE3', function () {
     expect(await sstore3.read4(key)).to.equal(data)
   })
 
-  it('Should change stored value when using empty string key twice', async () => {
+  it('Should change stored value when using empty string 5 times', async () => {
     const key = ''
-    const data = ethers.utils.hexlify(ethers.utils.randomBytes(113))
-    await sstore3.write2(key, data)
-
-    const data2 = ethers.utils.hexlify(ethers.utils.randomBytes(113))
-    await sstore3.write2(key, data2)
-    expect(await sstore3.read4(key)).to.equal(data2)
+    for (let i = 0; i < 5; i++) {
+      const data = ethers.utils.hexlify(ethers.utils.randomBytes(113))
+      await sstore3.write2(key, data)
+      expect(await sstore3.read4(key)).to.equal(data)
+    }
   })
 
-  describe('Using long key', () => {
+  xdescribe('Using long key', () => {
     const key = `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
@@ -86,7 +85,7 @@ describe('SSTORE3', function () {
   })
 
   keyTypes.forEach(({ name, getKey, write, read, addressOf }) => {
-    describe(`Using ${name} as keys`, () => {
+    xdescribe(`Using ${name} as keys`, () => {
       it('Should store and retrieve data', async () => {
         const key = getKey(randomKey())
         const data = ethers.utils.hexlify(ethers.utils.randomBytes(113))

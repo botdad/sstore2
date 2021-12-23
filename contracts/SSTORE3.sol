@@ -3,7 +3,8 @@ pragma solidity ^0.8.10;
 
 import "./utils/CREATE3Optimized.sol";
 import "./utils/Bytecode.sol";
-import "hardhat/console.sol";
+
+// import "hardhat/console.sol";
 
 /**
   @title A rewritable key-value storage for storing chunks of data with a lower write & read cost.
@@ -92,6 +93,16 @@ library SSTORE3 {
     @param _key string key that constains the data
     @return data read from contract associated with `_key`
   */
+  function getAddress(string memory _key) internal view returns (bytes memory) {
+    return read(keccak256(bytes(_key)));
+  }
+
+  /**
+    @notice Reads the contents for a given `_key`, it maps to a contract code as data, skips the first byte
+    @dev The function is intended for reading pointers first written by `write`
+    @param _key string key that constains the data
+    @return data read from contract associated with `_key`
+  */
   function read(string memory _key) internal view returns (bytes memory) {
     return read(keccak256(bytes(_key)));
   }
@@ -134,12 +145,10 @@ library SSTORE3 {
     @return data read from contract associated with `_key`
   */
   function read(bytes32 _key) internal view returns (bytes memory) {
-    return
-      Bytecode.codeAt(
-        CREATE3Optimized.addressOf(internalKey(_key)),
-        DATA_OFFSET,
-        type(uint256).max
-      );
+    (address addr1, address addr2) = CREATE3Optimized.possibleAddressesOf(
+      internalKey(_key)
+    );
+    return Bytecode.codeAt(addr1, addr2, DATA_OFFSET, type(uint256).max);
   }
 
   /**
@@ -154,12 +163,11 @@ library SSTORE3 {
     view
     returns (bytes memory)
   {
+    (address addr1, address addr2) = CREATE3Optimized.possibleAddressesOf(
+      internalKey(_key)
+    );
     return
-      Bytecode.codeAt(
-        CREATE3Optimized.addressOf(internalKey(_key)),
-        _start + DATA_OFFSET,
-        type(uint256).max
-      );
+      Bytecode.codeAt(addr1, addr2, _start + DATA_OFFSET, type(uint256).max);
   }
 
   /**
@@ -175,11 +183,11 @@ library SSTORE3 {
     uint256 _start,
     uint256 _end
   ) internal view returns (bytes memory) {
+    (address addr1, address addr2) = CREATE3Optimized.possibleAddressesOf(
+      internalKey(_key)
+    );
+
     return
-      Bytecode.codeAt(
-        CREATE3Optimized.addressOf(internalKey(_key)),
-        _start + DATA_OFFSET,
-        _end + DATA_OFFSET
-      );
+      Bytecode.codeAt(addr1, addr2, _start + DATA_OFFSET, _end + DATA_OFFSET);
   }
 }
