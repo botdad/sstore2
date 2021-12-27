@@ -43,26 +43,26 @@ async function main () {
 
     const w1 = await (await bench.write1(key, slice, { gasLimit: 30000000 })).wait()
     const w2 = await (await bench.write2(key, slice, { gasLimit: 30000000 })).wait()
-    const w3 = await (await bench.write3(slice, { gasLimit: 30000000 })).wait()
+    // const w3 = await (await bench.write3(slice, { gasLimit: 30000000 })).wait()
 
-    const addr = await addressFromWrite(w3)
+    // const addr = await addressFromWrite(w3)
 
     const r1 = await (await bench.read1(key)).wait()
     const r2 = await (await bench.read2(key)).wait()
-    const r3 = await (await bench.read3(addr)).wait()
+    // const r3 = await (await bench.read3(addr)).wait()
 
-    console.log('size:', i, 'native write:', await costFromTx(w1), 'sstore2 write:', await costFromTx(w3), 'sstore2-map write:', await costFromTx(w2))
-    console.log('size:', i, 'native read:', await costFromTx(r1), 'sstore2 read:', await costFromTx(r3), 'sstore2-map read:', await costFromTx(r2))
+    console.log('size:', i, 'native write:', await costFromTx(w1), 'sstore2-map write:', await costFromTx(w2))
+    console.log('size:', i, 'native read:', await costFromTx(r1), 'sstore2-map read:', await costFromTx(r2))
     console.log()
 
     await csvWriter.writeRecords([{
       size: i,
       r1: await costFromTx(r1),
       r2: await costFromTx(r2),
-      r3: await costFromTx(r3),
+      // r3: await costFromTx(r3),
       w1: await costFromTx(w1),
-      w2: await costFromTx(w2),
-      w3: await costFromTx(w3)
+      w2: await costFromTx(w2)
+      // w3: await costFromTx(w3)
     }])
   }
 }
